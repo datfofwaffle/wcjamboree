@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 Office Bracket</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --green: #1a6b3c;
+    --green-light: #2d9e5f;
+    --pitch: #0d3320;
+    --gold: #f0c040;
+    --white: #f5f5f0;
+    --gray: #7a8a7a;
+    --dark: #060f08;
+    --line: rgba(255,255,255,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--pitch);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 100px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 100px);
+  }
+
+  header {
+    text-align: center;
+    padding: 36px 20px 20px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(to bottom, rgba(240,192,64,0.07), transparent);
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.2rem, 6vw, 4.5rem);
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 2px 24px rgba(240,192,64,0.25);
+  }
+
+  header p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gray);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 700;
+  }
+  .btn-gold { background: var(--gold); color: var(--dark); }
+  .btn-gold:hover { background: #f8d060; transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--gray); border: 1px solid rgba(255,255,255,0.12); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  .tip {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+  }
+
+  /* Bracket */
+  .bracket-wrapper {
+    overflow-x: auto;
+    padding: 28px 30px 60px;
+  }
+
+  .bracket {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    min-width: max-content;
+  }
+
+  /* Left half + right half + center champion */
+  .half {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+  }
+
+  .half.right {
+    flex-direction: row-reverse;
+  }
+
+  .round-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 168px;
+  }
+
+  .round-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray);
+    text-align: center;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .round-matches {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+  }
+
+  .match-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+  }
+
+  .match {
+    width: 156px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.035);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .match:hover {
+    border-color: rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.055);
+  }
+
+  .team-slot {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    gap: 7px;
+    min-height: 34px;
+    border-left: 3px solid transparent;
+    transition: background 0.12s;
+  }
+
+  .team-slot:first-child {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .team-slot.winner { background: rgba(240,192,64,0.09); }
+  .team-slot.winner .team-name { color: var(--gold); font-weight: 700; }
+  .team-slot.loser .team-name { color: #4a5a4a; text-decoration: line-through; }
+  .team-slot.loser .team-owner { color: #3a4a3a; }
+  .team-slot.eliminated { background: rgba(0,0,0,0.2); }
+  .team-slot.eliminated .team-name { color: #3a4a3a; text-decoration: line-through; font-style: italic; }
+  .team-slot.eliminated .team-owner { color: #2a3a2a; }
+
+  .team-color-bar {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .team-name {
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.2;
+    flex: 1;
+    color: var(--white);
+  }
+
+  .team-owner {
+    font-size: 0.58rem;
+    color: var(--gray);
+    font-family: 'Space Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .team-slot.empty .team-name {
+    color: #3a4a3a;
+    font-style: italic;
+    font-size: 0.68rem;
+  }
+
+  /* Connectors */
+  .connector-col {
+    display: flex;
+    flex-direction: column;
+    width: 20px;
+    flex-shrink: 0;
+    padding-top: 28px; /* matches label height */
+  }
+
+  .conn-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .conn-lines {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .conn-top-half {
+    flex: 1;
+    border-right: 1px solid rgba(255,255,255,0.13);
+    border-bottom: 1px solid rgba(255,255,255,0.13);
+  }
+
+  .conn-bot-half {
+    flex: 1;
+    border-right: 1px solid rgba(255,255,255,0.13);
+    border-top: 1px solid rgba(255,255,255,0.13);
+  }
+
+  /* Champion center */
+  .champion-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 160px;
+    padding: 0 10px;
+    padding-top: 28px;
+  }
+
+  .trophy { font-size: 2.8rem; filter: drop-shadow(0 0 16px rgba(240,192,64,0.45)); margin-bottom: 8px; }
+  .champ-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.25em; color: var(--gold); margin-bottom: 4px; }
+  .champ-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; color: var(--white); min-height: 2.2rem; text-align: center; }
+  .champ-owner { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--gray); letter-spacing: 0.08em; margin-top: 4px; }
+
+  /* Final connector */
+  .final-conn {
+    display: flex;
+    flex-direction: column;
+    width: 20px;
+    flex-shrink: 0;
+    padding-top: 28px;
+    align-items: center;
+    justify-content: center;
+  }
+  .final-line {
+    width: 20px;
+    height: 1px;
+    background: rgba(255,255,255,0.13);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.78);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #122218;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 10px;
+    padding: 26px;
+    width: 310px;
+    max-width: 92vw;
+  }
+
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .modal p {
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom: 16px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .team-choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.09);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.14s;
+  }
+  .team-choice:hover { background: rgba(255,255,255,0.06); border-color: var(--gold); }
+  .team-choice .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .team-choice .name { font-weight: 600; font-size: 0.82rem; flex:1; }
+  .team-choice .owner { font-size: 0.65rem; color: var(--gray); font-family: 'Space Mono', monospace; }
+
+  .modal-cancel {
+    width: 100%;
+    margin-top: 12px;
+    padding: 9px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.09);
+    color: var(--gray);
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    transition: all 0.14s;
+  }
+  .modal-cancel:hover { border-color: rgba(255,255,255,0.22); color: var(--white); }
+
+  ::-webkit-scrollbar { height: 5px; width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>World Cup 2026 · Office Bracket</h1>
+  <p>Round of 32 — Group Stage Complete</p>
+</header>
+
+<div class="legend" id="legend"></div>
+
+<div class="controls">
+  <button class="btn btn-gold" onclick="resetWinners()">Reset Winners</button>
+  <button class="btn btn-outline" onclick="saveBracket()">⬇ Download Updated File</button>
+  <span class="tip">Click any match to pick a winner · Download to publish updates</span>
+</div>
+
+<div class="bracket-wrapper">
+  <div class="bracket" id="bracket"></div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Pick Winner</h2>
+    <p id="modal-desc"></p>
+    <div id="modal-choices"></div>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const EMP = {
+  nigel:     { color: '#e63946', label: 'Nigel' },
+  chris:     { color: '#4dabf7', label: 'Chris' },
+  kris:      { color: '#9775fa', label: 'Kris' },
+  jorge:     { color: '#ff922b', label: 'Jorge' },
+  elizabeth: { color: '#2dd4a0', label: 'Elizabeth' },
+  jyo:       { color: '#f0c040', label: 'Jyo' },
+  jack:      { color: '#f783ac', label: 'Jack' },
+};
+
+// Who owns each team
+const OWNERS = {
+  // Nigel
+  'Jordan': 'nigel', 'Uruguay': 'nigel', 'Tunisia': 'nigel', 'Canada': 'nigel',
+  'South Africa': 'nigel', 'Egypt': 'nigel', 'France': 'nigel',
+  // Chris
+  'Iraq': 'chris', 'Cabo Verde': 'chris', 'Czechia': 'chris', 'Morocco': 'chris',
+  'Netherlands': 'chris', 'Bosnia': 'chris',
+  // Kris
+  'Paraguay': 'kris', 'Curaçao': 'kris', 'Ghana': 'kris', 'England': 'kris',
+  'Qatar': 'kris', 'DR Congo': 'kris', 'Saudi Arabia': 'kris',
+  // Jorge
+  'Mexico': 'jorge', 'Korea': 'jorge', 'Colombia': 'jorge', 'Norway': 'jorge',
+  'Panama': 'jorge', 'Haiti': 'jorge', 'Algeria': 'jorge',
+  // Elizabeth
+  'Belgium': 'elizabeth', 'Japan': 'elizabeth', 'New Zealand': 'elizabeth', 'USA': 'elizabeth',
+  'Croatia': 'elizabeth', 'Scotland': 'elizabeth', 'Ecuador': 'elizabeth',
+  // Jyo
+  'Uzbekistan': 'jyo', 'Switzerland': 'jyo', 'Iran': 'jyo', 'Germany': 'jyo',
+  'Australia': 'jyo', 'Turkey': 'jyo', 'Brazil': 'jyo',
+  // Jack
+  'Sweden': 'jack', 'Portugal': 'jack', 'Senegal': 'jack', 'Ivory Coast': 'jack',
+  'Spain': 'jack', 'Argentina': 'jack', 'Austria': 'jack',
+};
+
+function team(name) {
+  return { name, owner: OWNERS[name] };
+}
+
+// OFFICIAL Round of 32 bracket (from FIFA/Fox Sports, June 27 2026)
+// Structured as a proper single-elimination bracket, split into two halves of 8 matches each
+// Left half feeds into Left SF → Final
+// Right half feeds into Right SF → Final
+
+// The bracket is fixed draw — these are the actual matchups in bracket order:
+// Based on the confirmed pairings, I'm organizing into a coherent half-bracket structure
+// Left side (matches 1-8): → Left QF → Left SF → Final
+// Right side (matches 9-16): → Right QF → Right SF → Final
+
+const R32 = [
+  // LEFT HALF (top of bracket)
+  // Match 1
+  { team1: team('Canada'),      team2: team('South Africa') },  // Jun 28
+  // Match 2
+  { team1: team('Brazil'),      team2: team('Japan') },         // Jun 29
+  // Match 3
+  { team1: team('Germany'),     team2: team('Paraguay') },      // Jun 29
+  // Match 4
+  { team1: team('Netherlands'), team2: team('Morocco') },       // Jun 29
+  // Match 5
+  { team1: team('Ivory Coast'), team2: team('Norway') },        // Jun 30
+  // Match 6
+  { team1: team('France'),      team2: team('Sweden') },        // Jun 30
+  // Match 7
+  { team1: team('Mexico'),      team2: team('Ecuador') },       // Jun 30
+  // Match 8
+  { team1: team('Belgium'),     team2: team('Korea') },         // Jul 1
+
+  // RIGHT HALF (bottom of bracket)
+  // Match 9
+  { team1: team('USA'),         team2: team('Bosnia') },        // Jul 1
+  // Match 10
+  { team1: team('England'),     team2: team('DR Congo') },      // Jul 1
+  // Match 11
+  { team1: team('Colombia'),    team2: team('Croatia') },       // Jul 2 (proj)
+  // Match 12
+  { team1: team('Spain'),       team2: team('Austria') },       // Jul 2 (proj)
+  // Match 13
+  { team1: team('Switzerland'), team2: team('Iran') },          // Jul 2 (proj)
+  // Match 14
+  { team1: team('Argentina'),   team2: team('Cabo Verde') },    // Jul 3
+  // Match 15
+  { team1: team('Egypt'),       team2: team('Australia') },     // Jul 3
+  // Match 16
+  { team1: team('Portugal'),    team2: team('Ghana') },         // Jul 2 (proj)
+];
+
+// Eliminated teams (didn't make Round of 32)
+const ELIMINATED = new Set([
+  'Jordan','Tunisia','Uruguay','Saudi Arabia','Curaçao','Qatar',
+  'Iraq','Czechia',
+  'Panama','Haiti','Algeria',
+  'New Zealand','Scotland',
+  'Uzbekistan','Turkey',
+  // No Jack teams eliminated - all 7 made it
+]);
+
+// State: winners for each round
+// rounds[0] = R32 winners (16 matches)
+// rounds[1] = R16 winners (8 matches)
+// rounds[2] = QF winners (4 matches)
+// rounds[3] = SF winners (2 matches)
+// rounds[4] = Final winner (1 match)
+let winners = /*__WINNERS__*/{ "0": {}, "1": {}, "2": {}, "3": {}, "4": {} }/*__/WINNERS__*/;
+
+function getTeam(roundIdx, matchIdx) {
+  if (roundIdx === 0) return R32[matchIdx];
+  // team comes from winner of previous round
+  const prev = roundIdx - 1;
+  const m1 = matchIdx * 2;
+  const m2 = matchIdx * 2 + 1;
+  return {
+    team1: winners[prev][m1] || null,
+    team2: winners[prev][m2] || null,
+  };
+}
+
+function getWinner(roundIdx, matchIdx) {
+  return winners[roundIdx][matchIdx] || null;
+}
+
+function setWinner(roundIdx, matchIdx, t) {
+  winners[roundIdx][matchIdx] = t;
+  // Cascade: clear downstream winners that are now invalid
+  clearDownstream(roundIdx, matchIdx);
+}
+
+function clearDownstream(roundIdx, matchIdx) {
+  for (let r = roundIdx + 1; r <= 4; r++) {
+    const m = Math.floor(matchIdx / Math.pow(2, r - roundIdx));
+    const current = winners[r][m];
+    if (current) {
+      const match = getTeam(r, m);
+      if (current !== match.team1 && current !== match.team2) {
+        delete winners[r][m];
+        // recurse
+        clearDownstream(r, m);
+      }
+    }
+    break; // only need to check one level at a time, recursion handles rest
+  }
+}
+
+// Render
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = Object.entries(EMP).map(([k,e]) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:${e.color}"></div><span>${e.label}</span></div>`
+  ).join('');
+}
+
+function teamSlotHTML(t, isWinner, isLoser) {
+  if (!t) {
+    return `<div class="team-slot empty"><span class="team-name">TBD</span></div>`;
+  }
+  const emp = EMP[t.owner];
+  let cls = 'team-slot';
+  if (isWinner) cls += ' winner';
+  if (isLoser) cls += ' loser';
+  return `<div class="${cls}" style="border-left-color:${emp.color}">
+    <div class="team-color-bar" style="background:${emp.color}"></div>
+    <div style="flex:1;min-width:0">
+      <div class="team-name">${t.name}</div>
+      <div class="team-owner">${emp.label}</div>
+    </div>
+  </div>`;
+}
+
+function buildMatchEl(roundIdx, matchIdx) {
+  const match = getTeam(roundIdx, matchIdx);
+  const w = getWinner(roundIdx, matchIdx);
+  const t1 = match.team1, t2 = match.team2;
+
+  const div = document.createElement('div');
+  div.className = 'match';
+  div.innerHTML =
+    teamSlotHTML(t1, w && t1 && w.name === t1.name, w && t1 && w.name !== t1.name) +
+    teamSlotHTML(t2, w && t2 && w.name === t2.name, w && t2 && w.name !== t2.name);
+
+  div.onclick = () => openModal(roundIdx, matchIdx);
+  return div;
+}
+
+function render() {
+  const bracket = document.getElementById('bracket');
+  bracket.innerHTML = '';
+
+  // Number of matches per round
+  const sizes = [16, 8, 4, 2, 1];
+  const labels = ['Round of 32', 'Round of 16', 'Quarterfinals', 'Semifinals', 'Final'];
+
+  // We split into left half (matches 0-7) and right half (matches 8-15) for R32
+  // For subsequent rounds, left: 0-3, right: 4-7 (R16), etc.
+
+  // Build left side columns (rounds 0..3, left half)
+  const leftHalf = document.createElement('div');
+  leftHalf.className = 'half';
+
+  for (let r = 0; r < 4; r++) {
+    const col = buildRoundCol(r, labels[r], 'left');
+    leftHalf.appendChild(col);
+    if (r < 3) {
+      leftHalf.appendChild(buildConnectorCol(r, 'left'));
+    }
+  }
+
+  // Left SF to final connector
+  const leftFinalConn = document.createElement('div');
+  leftFinalConn.className = 'final-conn';
+  leftFinalConn.innerHTML = '<div class="final-line"></div>';
+  leftHalf.appendChild(leftFinalConn);
+
+  bracket.appendChild(leftHalf);
+
+  // Center: champion
+  const center = document.createElement('div');
+  center.className = 'champion-center';
+  const finalMatch = getTeam(4, 0);
+  const champ = getWinner(4, 0);
+  const champEmp = champ ? EMP[champ.owner] : null;
+
+  center.innerHTML = `
+    <div class="trophy">🏆</div>
+    <div class="champ-label">Champion</div>
+    <div class="champ-name">${champ ? champ.name : '—'}</div>
+    <div class="champ-owner" style="color:${champEmp ? champEmp.color : 'var(--gray)'}">${champ ? champEmp.label : ''}</div>
+  `;
+
+  // Final match (clickable)
+  const finalMatchEl = buildMatchEl(4, 0);
+  finalMatchEl.style.marginTop = '12px';
+  finalMatchEl.style.width = '156px';
+  center.appendChild(finalMatchEl);
+
+  bracket.appendChild(center);
+
+  // Right side (mirror)
+  const rightHalf = document.createElement('div');
+  rightHalf.className = 'half right';
+
+  for (let r = 0; r < 4; r++) {
+    const col = buildRoundCol(r, labels[r], 'right');
+    rightHalf.appendChild(col);
+    if (r < 3) {
+      rightHalf.appendChild(buildConnectorCol(r, 'right'));
+    }
+  }
+
+  // Right SF to final connector
+  const rightFinalConn = document.createElement('div');
+  rightFinalConn.className = 'final-conn';
+  rightFinalConn.innerHTML = '<div class="final-line"></div>';
+  rightHalf.appendChild(rightFinalConn);
+
+  bracket.appendChild(rightHalf);
+}
+
+function buildRoundCol(roundIdx, label, side) {
+  const col = document.createElement('div');
+  col.className = 'round-col';
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'round-label';
+  labelEl.textContent = label;
+  col.appendChild(labelEl);
+
+  const matchesEl = document.createElement('div');
+  matchesEl.className = 'round-matches';
+
+  // Number of matches on this side for this round
+  const totalMatches = [16, 8, 4, 2][roundIdx];
+  const halfMatches = totalMatches / 2;
+  const offset = side === 'right' ? halfMatches : 0;
+
+  for (let m = 0; m < halfMatches; m++) {
+    const globalMatchIdx = offset + m;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'match-wrapper';
+    wrapper.appendChild(buildMatchEl(roundIdx, globalMatchIdx));
+    matchesEl.appendChild(wrapper);
+  }
+
+  col.appendChild(matchesEl);
+  return col;
+}
+
+function buildConnectorCol(roundIdx, side) {
+  const col = document.createElement('div');
+  col.className = 'connector-col';
+
+  const totalMatches = [16, 8, 4, 2][roundIdx];
+  const halfMatches = totalMatches / 2;
+  // Groups of 2 matches connect to 1 next-round match
+  const groups = halfMatches / 2;
+
+  for (let g = 0; g < groups; g++) {
+    const grp = document.createElement('div');
+    grp.className = 'conn-group';
+    grp.style.flex = '2'; // 2 match slots
+    const lines = document.createElement('div');
+    lines.className = 'conn-lines';
+    lines.innerHTML = '<div class="conn-top-half"></div><div class="conn-bot-half"></div>';
+    grp.appendChild(lines);
+    col.appendChild(grp);
+  }
+
+  return col;
+}
+
+// Modal
+let pendingRound = null, pendingMatch = null;
+
+function openModal(roundIdx, matchIdx) {
+  const match = getTeam(roundIdx, matchIdx);
+  if (!match.team1 && !match.team2) return;
+  pendingRound = roundIdx;
+  pendingMatch = matchIdx;
+
+  const roundLabels = ['Round of 32','Round of 16','Quarterfinals','Semifinals','Final'];
+  document.getElementById('modal-desc').textContent = `${roundLabels[roundIdx]} · Match ${matchIdx + 1}`;
+
+  const choices = document.getElementById('modal-choices');
+  choices.innerHTML = '';
+
+  const w = getWinner(roundIdx, matchIdx);
+
+  [match.team1, match.team2].forEach(t => {
+    if (!t) return;
+    const emp = EMP[t.owner];
+    const div = document.createElement('div');
+    div.className = 'team-choice';
+    if (w && w.name === t.name) div.style.borderColor = emp.color;
+    div.innerHTML = `
+      <div class="dot" style="background:${emp.color}"></div>
+      <span class="name">${t.name}</span>
+      <span class="owner">${emp.label}</span>
+    `;
+    div.onclick = () => pickWinner(t);
+    choices.appendChild(div);
+  });
+
+  if (w) {
+    const clearDiv = document.createElement('div');
+    clearDiv.className = 'team-choice';
+    clearDiv.innerHTML = `<span class="name" style="color:var(--gray);font-style:italic;font-size:0.75rem">Clear result</span>`;
+    clearDiv.onclick = () => {
+      delete winners[pendingRound][pendingMatch];
+      clearDownstream(pendingRound, pendingMatch);
+      render();
+      closeModal();
+    };
+    choices.appendChild(clearDiv);
+  }
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function pickWinner(t) {
+  setWinner(pendingRound, pendingMatch, t);
+  render();
+  closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  pendingRound = null; pendingMatch = null;
+}
+
+function resetWinners() {
+  if (!confirm('Clear all picked winners?')) return;
+  winners = { 0: {}, 1: {}, 2: {}, 3: {}, 4: {} };
+  render();
+}
+
+function saveBracket() {
+  fetch(location.href)
+    .then(r => r.text())
+    .then(html => {
+      const updated = html.replace(
+        /\/\*__WINNERS__\*\/[\s\S]*?\/\*__\/WINNERS__\*\//,
+        '/*__WINNERS__*/' + JSON.stringify(winners) + '/*__/WINNERS__*/'
+      );
+      const blob = new Blob([updated], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'world-cup-bracket.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    })
+    .catch(() => alert('Save failed. Make sure the file is hosted (GitHub Pages), not opened directly from disk.'));
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+renderLegend();
+render();
+</script>
+</body>
+</html>
