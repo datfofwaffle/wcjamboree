@@ -189,6 +189,17 @@
     background: rgba(255,255,255,0.055);
   }
 
+  .match-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray);
+    padding: 3px 8px 2px;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
   .team-slot {
     display: flex;
     align-items: center;
@@ -381,7 +392,7 @@
 
 <header>
   <h1>World Cup Jamboree!</h1>
-  <p>32 teams, one winner</p>
+  <p>32 teams - one winner</p>
 </header>
 
 <div class="legend" id="legend"></div>
@@ -457,40 +468,23 @@ function team(name) {
 
 const R32 = [
   // LEFT HALF (top of bracket)
-  // Match 1
-  { team1: team('Canada'),      team2: team('South Africa') },  // Jun 28
-  // Match 2
-  { team1: team('Brazil'),      team2: team('Japan') },         // Jun 29
-  // Match 3
-  { team1: team('Germany'),     team2: team('Paraguay') },      // Jun 29
-  // Match 4
-  { team1: team('Netherlands'), team2: team('Morocco') },       // Jun 29
-  // Match 5
-  { team1: team('Ivory Coast'), team2: team('Norway') },        // Jun 30
-  // Match 6
-  { team1: team('France'),      team2: team('Sweden') },        // Jun 30
-  // Match 7
-  { team1: team('Mexico'),      team2: team('Ecuador') },       // Jun 30
-  // Match 8
-  { team1: team('Belgium'),     team2: team('Korea') },         // Jul 1
-
+  { team1: team('Canada'),      team2: team('South Africa'), date: 'Jun 28' },
+  { team1: team('Brazil'),      team2: team('Japan'),        date: 'Jun 29' },
+  { team1: team('Germany'),     team2: team('Paraguay'),     date: 'Jun 29' },
+  { team1: team('Netherlands'), team2: team('Morocco'),      date: 'Jun 29' },
+  { team1: team('Ivory Coast'), team2: team('Norway'),       date: 'Jun 30' },
+  { team1: team('France'),      team2: team('Sweden'),       date: 'Jun 30' },
+  { team1: team('Mexico'),      team2: team('Ecuador'),      date: 'Jun 30' },
+  { team1: team('Belgium'),     team2: team('Korea'),        date: 'Jul 1'  },
   // RIGHT HALF (bottom of bracket)
-  // Match 9
-  { team1: team('USA'),         team2: team('Bosnia') },        // Jul 1
-  // Match 10
-  { team1: team('England'),     team2: team('DR Congo') },      // Jul 1
-  // Match 11
-  { team1: team('Colombia'),    team2: team('Croatia') },       // Jul 2 (proj)
-  // Match 12
-  { team1: team('Spain'),       team2: team('Austria') },       // Jul 2 (proj)
-  // Match 13
-  { team1: team('Switzerland'), team2: team('Iran') },          // Jul 2 (proj)
-  // Match 14
-  { team1: team('Argentina'),   team2: team('Cabo Verde') },    // Jul 3
-  // Match 15
-  { team1: team('Egypt'),       team2: team('Australia') },     // Jul 3
-  // Match 16
-  { team1: team('Portugal'),    team2: team('Ghana') },         // Jul 2 (proj)
+  { team1: team('USA'),         team2: team('Bosnia'),       date: 'Jul 1'  },
+  { team1: team('England'),     team2: team('DR Congo'),     date: 'Jul 1'  },
+  { team1: team('Colombia'),    team2: team('Croatia'),      date: 'Jul 2'  },
+  { team1: team('Spain'),       team2: team('Austria'),      date: 'Jul 2'  },
+  { team1: team('Switzerland'), team2: team('Iran'),         date: 'Jul 2'  },
+  { team1: team('Argentina'),   team2: team('Cabo Verde'),   date: 'Jul 3'  },
+  { team1: team('Egypt'),       team2: team('Australia'),    date: 'Jul 3'  },
+  { team1: team('Portugal'),    team2: team('Ghana'),        date: 'Jul 2'  },
 ];
 
 // Eliminated teams (didn't make Round of 32)
@@ -581,7 +575,13 @@ function buildMatchEl(roundIdx, matchIdx) {
 
   const div = document.createElement('div');
   div.className = 'match';
+
+  const dateBar = match.date
+    ? `<div class="match-date">${match.date}</div>`
+    : '';
+
   div.innerHTML =
+    dateBar +
     teamSlotHTML(t1, w && t1 && w.name === t1.name, w && t1 && w.name !== t1.name) +
     teamSlotHTML(t2, w && t2 && w.name === t2.name, w && t2 && w.name !== t2.name);
 
