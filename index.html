@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Cup Jamboree!</title>
+<title>World Cup 2026 Office Bracket</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
@@ -391,8 +391,8 @@
 <body>
 
 <header>
-  <h1>World Cup Jamboree!</h1>
-  <p>32 teams - one winner</p>
+  <h1>World Cup 2026 · Office Bracket</h1>
+  <p>Round of 32 — Group Stage Complete</p>
 </header>
 
 <div class="legend" id="legend"></div>
@@ -456,45 +456,58 @@ function team(name) {
   return { name, owner: OWNERS[name] };
 }
 
-// OFFICIAL Round of 32 bracket (from FIFA/Fox Sports, June 27 2026)
-// Structured as a proper single-elimination bracket, split into two halves of 8 matches each
-// Left half feeds into Left SF → Final
-// Right half feeds into Right SF → Final
-
-// The bracket is fixed draw — these are the actual matchups in bracket order:
-// Based on the confirmed pairings, I'm organizing into a coherent half-bracket structure
-// Left side (matches 1-8): → Left QF → Left SF → Final
-// Right side (matches 9-16): → Right QF → Right SF → Final
+// OFFICIAL bracket order per Fox Sports/FIFA bracket image
+// LEFT HALF (pairs feed into same R16 match):
+//   Germany/Paraguay  ↘ → R16
+//   France/Sweden     ↗
+//   South Africa/Canada ↘ → R16
+//   Netherlands/Morocco ↗
+//   Portugal/Croatia  ↘ → R16
+//   Spain/Austria     ↗
+//   USA/Bosnia        ↘ → R16
+//   Belgium/Senegal   ↗
+//
+// RIGHT HALF:
+//   Brazil/Japan       ↘ → R16
+//   Ivory Coast/Norway ↗
+//   Mexico/Ecuador     ↘ → R16
+//   England/DR Congo   ↗
+//   Argentina/CaboVerde ↘ → R16
+//   Australia/Egypt    ↗
+//   Switzerland/Algeria ↘ → R16
+//   Colombia/Ghana     ↗
 
 const R32 = [
-  // LEFT HALF (top of bracket)
-  { team1: team('Canada'),      team2: team('South Africa'), date: 'Jun 28' },
-  { team1: team('Brazil'),      team2: team('Japan'),        date: 'Jun 29' },
-  { team1: team('Germany'),     team2: team('Paraguay'),     date: 'Jun 29' },
-  { team1: team('Netherlands'), team2: team('Morocco'),      date: 'Jun 29' },
-  { team1: team('Ivory Coast'), team2: team('Norway'),       date: 'Jun 30' },
-  { team1: team('France'),      team2: team('Sweden'),       date: 'Jun 30' },
-  { team1: team('Mexico'),      team2: team('Ecuador'),      date: 'Jun 30' },
-  { team1: team('Belgium'),     team2: team('Korea'),        date: 'Jul 1'  },
-  // RIGHT HALF (bottom of bracket)
-  { team1: team('USA'),         team2: team('Bosnia'),       date: 'Jul 1'  },
-  { team1: team('England'),     team2: team('DR Congo'),     date: 'Jul 1'  },
-  { team1: team('Colombia'),    team2: team('Croatia'),      date: 'Jul 2'  },
-  { team1: team('Spain'),       team2: team('Austria'),      date: 'Jul 2'  },
-  { team1: team('Switzerland'), team2: team('Iran'),         date: 'Jul 2'  },
-  { team1: team('Argentina'),   team2: team('Cabo Verde'),   date: 'Jul 3'  },
-  { team1: team('Egypt'),       team2: team('Australia'),    date: 'Jul 3'  },
-  { team1: team('Portugal'),    team2: team('Ghana'),        date: 'Jul 2'  },
+  // ── LEFT HALF ──
+  { team1: team('Germany'),     team2: team('Paraguay'),     date: 'Jun 29' }, // idx 0  ↘
+  { team1: team('France'),      team2: team('Sweden'),       date: 'Jun 30' }, // idx 1  ↗ → R16
+  { team1: team('South Africa'),team2: team('Canada'),       date: 'Jun 28' }, // idx 2  ↘
+  { team1: team('Netherlands'), team2: team('Morocco'),      date: 'Jun 29' }, // idx 3  ↗ → R16
+  { team1: team('Portugal'),    team2: team('Croatia'),      date: 'Jul 2'  }, // idx 4  ↘
+  { team1: team('Spain'),       team2: team('Austria'),      date: 'Jul 2'  }, // idx 5  ↗ → R16
+  { team1: team('USA'),         team2: team('Bosnia'),       date: 'Jul 1'  }, // idx 6  ↘
+  { team1: team('Belgium'),     team2: team('Senegal'),      date: 'Jul 1'  }, // idx 7  ↗ → R16
+
+  // ── RIGHT HALF ──
+  { team1: team('Brazil'),      team2: team('Japan'),        date: 'Jun 29' }, // idx 8  ↘
+  { team1: team('Ivory Coast'), team2: team('Norway'),       date: 'Jun 30' }, // idx 9  ↗ → R16
+  { team1: team('Mexico'),      team2: team('Ecuador'),      date: 'Jun 30' }, // idx 10 ↘
+  { team1: team('England'),     team2: team('DR Congo'),     date: 'Jul 1'  }, // idx 11 ↗ → R16
+  { team1: team('Argentina'),   team2: team('Cabo Verde'),   date: 'Jul 3'  }, // idx 12 ↘
+  { team1: team('Australia'),   team2: team('Egypt'),        date: 'Jul 3'  }, // idx 13 ↗ → R16
+  { team1: team('Switzerland'), team2: team('Algeria'),      date: 'Jul 2'  }, // idx 14 ↘
+  { team1: team('Colombia'),    team2: team('Ghana'),        date: 'Jul 3'  }, // idx 15 ↗ → R16
 ];
 
-// Eliminated teams (didn't make Round of 32)
+// Eliminated in group stage (didn't make Round of 32)
 const ELIMINATED = new Set([
-  'Jordan','Tunisia','Uruguay','Saudi Arabia','Curaçao','Qatar',
-  'Iraq','Czechia',
-  'Panama','Haiti','Algeria',
-  'New Zealand','Scotland',
-  'Uzbekistan','Turkey',
-  // No Jack teams eliminated - all 7 made it
+  'Jordan','Tunisia','Uruguay',          // Nigel
+  'Iraq','Czechia',                      // Chris
+  'Curaçao','Qatar','Saudi Arabia',      // Kris
+  'Panama','Haiti',                      // Jorge (Algeria advanced!)
+  'New Zealand','Scotland',              // Elizabeth
+  'Uzbekistan','Turkey','Iran',          // Jyo (Iran eliminated)
+  'Korea',                               // Jorge (Korea eliminated in group stage)
 ]);
 
 // State: winners for each round
@@ -503,7 +516,7 @@ const ELIMINATED = new Set([
 // rounds[2] = QF winners (4 matches)
 // rounds[3] = SF winners (2 matches)
 // rounds[4] = Final winner (1 match)
-let winners = /*__WINNERS__*/{"0":{"0":{"name":"Canada","owner":"nigel"}},"1":{},"2":{},"3":{},"4":{}}/*__/WINNERS__*/;
+let winners = /*__WINNERS__*/{ "0": {"0":{"name":"Paraguay","owner":"kris"},"2":{"name":"Canada","owner":"nigel"},"8":{"name":"Brazil","owner":"jyo"}}, "1": {}, "2": {}, "3": {}, "4": {} }/*__/WINNERS__*/;
 
 function getTeam(roundIdx, matchIdx) {
   if (roundIdx === 0) return R32[matchIdx];
